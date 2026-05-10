@@ -22,7 +22,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 /**
  * http://localhost:8080/calendar/async/events
  */
-@WebServlet(urlPatterns = { "/async/*" }, asyncSupported = true, name = "async")
+//@WebServlet(urlPatterns = { "/async/*" }, asyncSupported = true, name = "async")
 
 public class AsyncDispatcherServlet extends DispatcherServlet {
 
