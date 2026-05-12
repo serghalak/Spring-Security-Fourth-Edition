@@ -32,14 +32,37 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authz -> authz
-                        //.requestMatchers("/login", "/login?*", "/login?error").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .requestMatchers("/**").hasRole("USER")
                         .anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults())
+                //.formLogin(Customizer.withDefaults())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .failureUrl("/login/form?error")
+                        .usernameParameter("username")
+                        .passwordParameter("password"))
+                .logout(form -> form
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                )
                 .csrf(AbstractHttpConfigurer::disable);
 
         http.headers(headers ->
                 headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+
+//        http
+//                .authorizeHttpRequests( authz -> authz
+//                        .requestMatchers("/**")
+//                        .hasRole("USER")
+//                )
+//                .formLogin(form -> form
+//                        .loginPage("/login/form")
+//                        .loginProcessingUrl("/login")
+//                        .failureUrl("/login/form?error")
+//                        .usernameParameter("username")
+//                        .passwordParameter("password");
+
 
         return http.build();
     }
