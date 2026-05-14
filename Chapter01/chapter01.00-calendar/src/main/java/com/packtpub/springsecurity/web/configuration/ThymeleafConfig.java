@@ -1,5 +1,9 @@
 package com.packtpub.springsecurity.web.configuration;
 
+import java.util.HashSet;
+
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
@@ -40,6 +44,10 @@ public class ThymeleafConfig {
 	public SpringTemplateEngine templateEngine(final ITemplateResolver templateResolver) {
 		SpringTemplateEngine engine = new SpringTemplateEngine();
 		engine.setTemplateResolver(templateResolver);
+		engine.setAdditionalDialects(new HashSet<>() {{
+			add(new LayoutDialect());
+			add(new SpringSecurityDialect());
+		}});
 		return engine;
 	}
 

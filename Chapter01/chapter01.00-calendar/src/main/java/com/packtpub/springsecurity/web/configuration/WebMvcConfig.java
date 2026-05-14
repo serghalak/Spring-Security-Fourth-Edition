@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 
@@ -148,16 +149,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		configurer.enable();
 	}
 
-//	@Override
-//	public void addViewControllers(final ViewControllerRegistry registry) {
-//		registry.addViewController("/login/form")
-//				.setViewName("login");
-//	}
-
 	@Override
 	public void addViewControllers(final ViewControllerRegistry registry) {
 		registry.addViewController("/login/form")
 				.setViewName("login");
+		registry.addViewController("/errors/403")
+				.setViewName("errors/403");
+		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 }

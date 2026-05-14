@@ -47,47 +47,47 @@ public class SecurityConfig {
 
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/resources/**").permitAll()
-                        .requestMatchers("/webjars/**").permitAll()
-                        .requestMatchers("/").hasAnyRole("ANONYMOUS", "USER")
-                        .requestMatchers("/login/*").hasAnyRole("ANONYMOUS", "USER")
-                        .requestMatchers("/logout/*").hasAnyRole("ANONYMOUS", "USER")
-                        .requestMatchers("/admin/*").hasRole("ADMIN")
-                        .requestMatchers("/events/").hasRole("ADMIN")
-                        .requestMatchers("/**").hasRole("USER"))
-                //.formLogin(Customizer.withDefaults())
-                .formLogin(form -> form
-                        .loginPage("/login/form")
-                        .loginProcessingUrl("/login")
-                        .failureUrl("/login/form?error")
-                        .usernameParameter("username")
-                        .passwordParameter("password"))
-                .logout(form -> form
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login/form?logout")
-                )
-                .csrf(AbstractHttpConfigurer::disable);
+	/**
+	 * Filter chain security filter chain.
+	 *
+	 * @param http the http
+	 * @return the security filter chain
+	 * @throws Exception the exception
+	 */
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+				.authorizeHttpRequests( authz -> authz
+						.requestMatchers("/resources/**").permitAll()
+						.requestMatchers("/webjars/**").permitAll()
+						.requestMatchers("/").permitAll()
+						.requestMatchers("/login/*").permitAll()
+						.requestMatchers("/logout/*").permitAll()
+						.requestMatchers("/errors/**").permitAll()
+						.requestMatchers("/admin/*").hasRole("ADMIN")
+						.requestMatchers("/events/").hasRole("ADMIN")
+						.requestMatchers("/**").hasRole("USER")
+				)
+				.exceptionHandling(exceptions -> exceptions
+						.accessDeniedPage("/errors/403"))
+				.formLogin(form -> form
+						.loginPage("/login/form")
+						.loginProcessingUrl("/login")
+						.failureUrl("/login/form?error")
+						.usernameParameter("username")
+						.passwordParameter("password")
+						.defaultSuccessUrl("/default", true)
+						.permitAll()
+				).logout(form -> form
+						.logoutUrl("/logout")
+						.logoutSuccessUrl("/login/form?logout")
+						.permitAll()
+				)
 
-        http.headers(headers ->
-                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-
-//        http
-//                .authorizeHttpRequests( authz -> authz
-//                        .requestMatchers("/**")
-//                        .hasRole("USER")
-//                )
-//                .formLogin(form -> form
-//                        .loginPage("/login/form")
-//                        .loginProcessingUrl("/login")
-//                        .failureUrl("/login/form?error")
-//                        .usernameParameter("username")
-//                        .passwordParameter("password");
-
+				.csrf(AbstractHttpConfigurer::disable);
+		// For H2 Console
+		http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
         return http.build();
     }

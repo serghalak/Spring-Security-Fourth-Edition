@@ -19,6 +19,7 @@
 		<bootstrap.version>5.3.0</bootstrap.version>
 		<thymeleaf-spring6.version>3.1.2.RELEASE</thymeleaf-spring6.version>
 		<thymeleaf-layout-dialect.version>3.3.0</thymeleaf-layout-dialect.version>
+		<thymeleaf-extras.version>3.1.2.RELEASE</thymeleaf-extras.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<spring.version>6.1.4</spring.version>
 		<spring-security.version>6.2.2</spring-security.version>
@@ -109,6 +110,11 @@
 			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
 			<version>${thymeleaf-layout-dialect.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+			<version>${thymeleaf-extras.version}</version>
 		</dependency>
 		<!-- WebJars dependencies -->
 		<dependency>
