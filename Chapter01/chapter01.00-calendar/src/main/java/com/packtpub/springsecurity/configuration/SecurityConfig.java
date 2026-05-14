@@ -19,12 +19,32 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() {
-        UserDetails user = User.withDefaultPasswordEncoder()
+         UserDetails user = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("user")
+                .roles("USER")
+                .build();
+
+        UserDetails admin = User.withDefaultPasswordEncoder()
+                .username("admin")
+                .password("admin")
+                .roles("ADMIN")
+                .build();
+
+        UserDetails user1 = User.withDefaultPasswordEncoder()
                 .username("user1@example.com")
                 .password("user1")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+
+        UserDetails admin1 = User.withDefaultPasswordEncoder()
+                .username("admin1@example.com")
+                .password("admin1")
+                .roles("USER", "ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user, admin, user1, admin1);
+
     }
 
     @Bean
@@ -32,19 +52,24 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/**").hasRole("USER")
-                        .anyRequest().authenticated())
+                        .requestMatchers("/resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/").hasAnyRole("ANONYMOUS", "USER")
+                        .requestMatchers("/login/*").hasAnyRole("ANONYMOUS", "USER")
+                        .requestMatchers("/logout/*").hasAnyRole("ANONYMOUS", "USER")
+                        .requestMatchers("/admin/*").hasRole("ADMIN")
+                        .requestMatchers("/events/").hasRole("ADMIN")
+                        .requestMatchers("/**").hasRole("USER"))
                 //.formLogin(Customizer.withDefaults())
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/login/form")
                         .loginProcessingUrl("/login")
                         .failureUrl("/login/form?error")
                         .usernameParameter("username")
                         .passwordParameter("password"))
                 .logout(form -> form
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login/form?logout")
                 )
                 .csrf(AbstractHttpConfigurer::disable);
 
