@@ -7,6 +7,11 @@ import com.packtpub.springsecurity.dataaccess.EventDao;
 import com.packtpub.springsecurity.domain.CalendarUser;
 import com.packtpub.springsecurity.domain.Event;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,6 +30,7 @@ public class DefaultCalendarService implements CalendarService {
 	 * The User dao.
 	 */
 	private final CalendarUserDao userDao;
+	private final UserDetailsManager userDetailsManager;
 
 	/**
 	 * Instantiates a new Default calendar service.
@@ -32,7 +38,7 @@ public class DefaultCalendarService implements CalendarService {
 	 * @param eventDao the event dao
 	 * @param userDao  the user dao
 	 */
-	public DefaultCalendarService(EventDao eventDao, CalendarUserDao userDao) {
+	public DefaultCalendarService(EventDao eventDao, CalendarUserDao userDao, UserDetailsManager userDetailsManager) {
 		if (eventDao == null) {
 			throw new IllegalArgumentException("eventDao cannot be null");
 		}
@@ -41,6 +47,7 @@ public class DefaultCalendarService implements CalendarService {
 		}
 		this.eventDao = eventDao;
 		this.userDao = userDao;
+		this.userDetailsManager = userDetailsManager;
 	}
 
 	/**
@@ -119,6 +126,9 @@ public class DefaultCalendarService implements CalendarService {
 	 * @return the int
 	 */
 	public int createUser(CalendarUser user) {
+		List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
+		UserDetails userDetails = new User(user.getEmail(), user.getPassword(), authorities);
+		userDetailsManager.createUser(userDetails);
 		return userDao.createUser(user);
 	}
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  *
  *  @author bnasslahsen
  */
-@Component
+//@Component
 public class UserContextStub implements UserContext {
 	/**
 	 * The User service.

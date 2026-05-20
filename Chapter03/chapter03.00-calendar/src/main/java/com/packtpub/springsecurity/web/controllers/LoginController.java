@@ -1,12 +1,11 @@
 package com.packtpub.springsecurity.web.controllers;
 
+import com.packtpub.springsecurity.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -22,6 +21,12 @@ public class LoginController {
 	 */
 	private static final Logger logger = LoggerFactory
 			.getLogger(LoginController.class);
+
+	private final UserContext userContext;
+
+	public LoginController(UserContext userContext) {
+		this.userContext = userContext;
+	}
 
 	/**
 	 * Login model and view.
@@ -51,5 +56,12 @@ public class LoginController {
 		return model;
 
 	}
+
+//	@GetMapping(value = "/login/create")
+//	public String createUser() {
+//		userContext.setCurrentUser(null);
+//		System.out.println("Current User: " + userContext.getCurrentUser());
+//		return "Cureent user is: " + userContext.getCurrentUser().getFirstName() + " " + userContext.getCurrentUser().getLastName();
+//	}
 
 }
