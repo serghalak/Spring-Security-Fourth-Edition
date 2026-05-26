@@ -25,35 +25,35 @@ public class SecurityConfig {
 	 *
 	 * @return the in memory user details manager
 	 */
-	@Bean
-	public InMemoryUserDetailsManager userDetailsService() {
-		UserDetails user = User.withDefaultPasswordEncoder()
-				.username("user")
-				.password("user")
-				.roles("USER")
-				.build();
-
-		UserDetails admin = User.withDefaultPasswordEncoder()
-				.username("admin")
-				.password("admin")
-				.roles("USER", "ADMIN")
-				.build();
-
-		UserDetails user1 = User.withDefaultPasswordEncoder()
-				.username("user1@example.com")
-				.password("user1")
-				.roles("USER")
-				.build();
-
-		UserDetails admin1 = User.withDefaultPasswordEncoder()
-				.username("admin1@example.com")
-				.password("admin1")
-				.roles("USER", "ADMIN")
-				.build();
-
-
-		return new InMemoryUserDetailsManager(user, admin, user1, admin1);
-	}
+//	@Bean
+//	public InMemoryUserDetailsManager userDetailsService() {
+//		UserDetails user = User.withDefaultPasswordEncoder()
+//				.username("user")
+//				.password("user")
+//				.roles("USER")
+//				.build();
+//
+//		UserDetails admin = User.withDefaultPasswordEncoder()
+//				.username("admin")
+//				.password("admin")
+//				.roles("USER", "ADMIN")
+//				.build();
+//
+//		UserDetails user1 = User.withDefaultPasswordEncoder()
+//				.username("user1@example.com")
+//				.password("user1")
+//				.roles("USER")
+//				.build();
+//
+//		UserDetails admin1 = User.withDefaultPasswordEncoder()
+//				.username("admin1@example.com")
+//				.password("admin1")
+//				.roles("USER", "ADMIN")
+//				.build();
+//
+//
+//		return new InMemoryUserDetailsManager(user, admin, user1, admin1);
+//	}
 
 
 	/**
@@ -79,7 +79,6 @@ public class SecurityConfig {
 						.requestMatchers("/admin/*").hasRole("ADMIN")
 						.requestMatchers("/events/").hasRole("ADMIN")
 						.requestMatchers("/**").hasRole("USER"))
-
 				.exceptionHandling(exceptions -> exceptions
 						.accessDeniedPage("/errors/403"))
 				.formLogin(form -> form
@@ -96,16 +95,19 @@ public class SecurityConfig {
 						.permitAll())
 				// CSRF is enabled by default, with Java Config
 				.csrf(AbstractHttpConfigurer::disable);
-		// The Session Management support is composed of a few components that work together to provide the functionality. Use SecurityContextHolderFilter.
-		http.securityContext(securityContext -> securityContext.requireExplicitSave(false));
 		// For H2 Console
-		http.headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.disable());
+		http.securityContext(securityContext -> securityContext.requireExplicitSave(false));
+		http.headers(headers -> headers.frameOptions(FrameOptionsConfig::disable));
 		return http.build();
 	}
 
+	/**
+	 * Encoder password encoder.
+	 *
+	 * @return the password encoder
+	 */
 	@Bean
 	public PasswordEncoder encoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
-
 }

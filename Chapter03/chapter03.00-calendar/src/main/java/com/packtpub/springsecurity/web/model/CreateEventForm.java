@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import com.packtpub.springsecurity.domain.Event;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -114,4 +115,10 @@ public class CreateEventForm {
 	public void setWhen(Calendar when) {
 		this.when = when;
 	}
+
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
+	}
+
 }

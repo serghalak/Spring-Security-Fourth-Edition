@@ -30,6 +30,7 @@ public class SignupController {
 	 */
 	private final CalendarService calendarService;
 
+
 	/**
 	 * Instantiates a new Signup controller.
 	 *

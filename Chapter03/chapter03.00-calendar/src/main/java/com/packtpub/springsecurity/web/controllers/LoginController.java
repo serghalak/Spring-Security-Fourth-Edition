@@ -1,6 +1,5 @@
 package com.packtpub.springsecurity.web.controllers;
 
-import com.packtpub.springsecurity.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +19,6 @@ public class LoginController {
 	 */
 	private static final Logger logger = LoggerFactory
 			.getLogger(LoginController.class);
-
-	private final UserContext userContext;
-
-	public LoginController(UserContext userContext) {
-		this.userContext = userContext;
-	}
 
 	/**
 	 * Login model and view.

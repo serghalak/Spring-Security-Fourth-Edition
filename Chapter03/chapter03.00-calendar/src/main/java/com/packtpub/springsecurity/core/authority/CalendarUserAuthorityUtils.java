@@ -1,11 +1,12 @@
 package com.packtpub.springsecurity.core.authority;
 
-import com.packtpub.springsecurity.domain.CalendarUser;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-
 import java.util.Collection;
 import java.util.List;
+
+import com.packtpub.springsecurity.domain.CalendarUser;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 
 /**
  * A utility class used for creating the {@link GrantedAuthority}'s given a {@link CalendarUser}. In a real solution

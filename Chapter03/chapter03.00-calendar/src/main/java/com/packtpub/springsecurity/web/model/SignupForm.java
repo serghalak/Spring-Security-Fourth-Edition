@@ -38,7 +38,7 @@ public class SignupForm {
 	/**
 	 * Gets the email address for this user.
 	 *
-	 * @return email email
+	 * @return email
 	 */
 	public String getEmail() {
 		return email;
@@ -92,7 +92,7 @@ public class SignupForm {
 	/**
 	 * Gets the password for this user.
 	 *
-	 * @return password password
+	 * @return password
 	 */
 	public String getPassword() {
 		return password;

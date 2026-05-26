@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * The type Error controller.
+ * This is Advice to handle INTERNAL_SERVER_ERROR
  *
  *  @author bnasslahsen
  */

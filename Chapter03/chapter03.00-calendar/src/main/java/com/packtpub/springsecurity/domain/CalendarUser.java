@@ -1,6 +1,6 @@
 package com.packtpub.springsecurity.domain;
 
-import java.io.Serializable;
+import java.security.Principal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  *  @author bnasslahsen
  */
-public class CalendarUser implements Serializable {
+public class CalendarUser implements Principal {
 	/**
 	 * The Id.
 	 */
@@ -144,11 +144,6 @@ public class CalendarUser implements Serializable {
 		this.password = password;
 	}
 
-	/**
-	 * Gets name.
-	 *
-	 * @return the name
-	 */
 	@JsonIgnore
 	public String getName() {
 		return lastName + ", " + firstName;
