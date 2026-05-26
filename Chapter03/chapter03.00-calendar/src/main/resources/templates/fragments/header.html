@@ -43,6 +43,10 @@
                     </ul>
                     <ul class="navbar-nav ml-auto" sec:authorize="!isAuthenticated()">
                         <li class="nav-item">
+                            <a class="btn btn-outline-light" id="navSignupLink"
+                               role="button" th:href="@{/signup/form}">Signup</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="btn btn-outline-light" id="navLoginLink"
                                role="button" th:href="@{/login/form}">Login</a>
                         </li>
@@ -51,9 +55,15 @@
                 </div>
             </div>
         </nav>
-    </div>
-    <div class="alert alert-success" th:if="${param.message != null}">
-        <span th:text="${message}"></span>
+
+        <!-- Standard messages -->
+        <div class="alert alert-success" th:if="${#vars['message'] != null}">
+            <span th:text="${#vars['message']}"></span>
+        </div>
+        <div class="alert alert-danger" th:if="${#vars['error'] != null}">
+            <span th:text="${#vars['error']}"></span>
+        </div>
+
     </div>
 </div>
 

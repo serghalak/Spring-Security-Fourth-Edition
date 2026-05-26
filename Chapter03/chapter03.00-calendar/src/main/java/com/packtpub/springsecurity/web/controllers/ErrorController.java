@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * The type Error controller.
@@ -20,22 +21,32 @@ public class ErrorController {
 	/**
 	 * The constant logger.
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(ErrorController.class);
+	private static Logger logger = LoggerFactory.getLogger(ErrorController.class);
 
 	/**
-	 * Exception string.
+	 * Exception model and view.
 	 *
 	 * @param throwable the throwable
 	 * @param model     the model
-	 * @return the string
+	 * @return the model and view
 	 */
 	@ExceptionHandler(Throwable.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public String exception(final Throwable throwable, final Model model) {
+	public ModelAndView exception(final Throwable throwable, final Model model) {
 		logger.error("Exception during execution of SpringSecurity application", throwable);
-		String errorMessage = (throwable != null ? throwable.getMessage() : "Unknown error");
-		model.addAttribute("error", errorMessage);
-		return "error";
+		StringBuilder sb = new StringBuilder();
+		sb.append("Exception during execution of Spring Security application!  ");
+
+		sb.append((throwable != null && throwable.getMessage() != null ? throwable.getMessage() : "Unknown error"));
+
+		sb.append(", root cause: ").append((throwable != null && throwable.getCause() != null ? throwable.getCause() : "Unknown cause"));
+		model.addAttribute("error", sb.toString());
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("error", sb.toString());
+		mav.setViewName("error");
+
+		return mav;
 	}
 
 }

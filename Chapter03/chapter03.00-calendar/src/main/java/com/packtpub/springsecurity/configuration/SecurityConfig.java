@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -72,6 +74,7 @@ public class SecurityConfig {
 						.requestMatchers("/").permitAll()
 						.requestMatchers("/login/*").permitAll()
 						.requestMatchers("/logout").permitAll()
+						.requestMatchers("/signup/*").permitAll()
 						.requestMatchers("/errors/**").permitAll()
 						.requestMatchers("/admin/*").hasRole("ADMIN")
 						.requestMatchers("/events/").hasRole("ADMIN")
@@ -93,9 +96,16 @@ public class SecurityConfig {
 						.permitAll())
 				// CSRF is enabled by default, with Java Config
 				.csrf(AbstractHttpConfigurer::disable);
+		// The Session Management support is composed of a few components that work together to provide the functionality. Use SecurityContextHolderFilter.
+		http.securityContext(securityContext -> securityContext.requireExplicitSave(false));
 		// For H2 Console
-		http.headers(headers -> headers.frameOptions(FrameOptionsConfig::disable));
+		http.headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.disable());
 		return http.build();
+	}
+
+	@Bean
+	public PasswordEncoder encoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
 }

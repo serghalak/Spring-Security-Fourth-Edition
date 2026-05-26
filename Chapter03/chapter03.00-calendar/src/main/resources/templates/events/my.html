@@ -13,10 +13,6 @@
 <div class="container">
     <!--/*/ <th:block th:insert="~{fragments/header :: header}"></th:block> /*/-->
 
-    <div class="alert alert-success" th:if="${message != null}">
-        <span th:text="${message}"></span>
-    </div>
-
     <p id="description">
         Below you can find the events for
         <strong th:text="${currentUser.email}"></strong>.
