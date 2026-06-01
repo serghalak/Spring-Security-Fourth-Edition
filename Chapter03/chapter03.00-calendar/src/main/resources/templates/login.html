@@ -22,9 +22,8 @@
         <div class="alert alert-success" th:if="${param.logout != null}">
             You have been logged out.
         </div>
-
         <fieldset>
-            <legend>Login Form!!!</legend>
+            <legend>Login Form</legend>
             <div class="mb-3">
                 <label class="form-label" for="username">Username</label>
                 <input autofocus="autofocus" class="form-control" id="username"
@@ -36,6 +35,12 @@
                 <input class="form-control" id="password" name="password"
                        type="password"/>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="domain">Domain</label>
+                <input class="form-control" id="domain" name="domain" type="text"/>
+            </div>
+
             <div class="mb-3">
                 <input class="btn btn-primary" id="submit" name="submit" type="submit"
                        value="Login"/>
