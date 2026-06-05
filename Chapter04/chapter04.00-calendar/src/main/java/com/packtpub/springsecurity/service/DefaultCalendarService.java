@@ -7,12 +7,8 @@ import com.packtpub.springsecurity.dataaccess.EventDao;
 import com.packtpub.springsecurity.domain.CalendarUser;
 import com.packtpub.springsecurity.domain.Event;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -33,31 +29,43 @@ public class DefaultCalendarService implements CalendarService {
 	private final CalendarUserDao userDao;
 
 	/**
-	 * The User details manager.
+	 * The Jdbc operations.
 	 */
-	private final UserDetailsManager userDetailsManager;
+	private final JdbcOperations jdbcOperations;
+
+	/**
+	 * The Password encoder.
+	 */
+	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 * Instantiates a new Default calendar service.
 	 *
-	 * @param eventDao           the event dao
-	 * @param userDao            the user dao
-	 * @param userDetailsManager the user details manager
+	 * @param eventDao        the event dao
+	 * @param userDao         the user dao
+	 * @param jdbcOperations  the jdbc operations
+	 * @param passwordEncoder the password encoder
 	 */
-	@Autowired
-	public DefaultCalendarService(EventDao eventDao, CalendarUserDao userDao, UserDetailsManager userDetailsManager) {
+	public DefaultCalendarService(final EventDao eventDao,
+			final CalendarUserDao userDao,
+			final JdbcOperations jdbcOperations,
+			final PasswordEncoder passwordEncoder) {
 		if (eventDao == null) {
 			throw new IllegalArgumentException("eventDao cannot be null");
 		}
 		if (userDao == null) {
 			throw new IllegalArgumentException("userDao cannot be null");
 		}
-		if (userDetailsManager == null) {
-			throw new IllegalArgumentException("userDetailsManager cannot be null");
+		if (jdbcOperations == null) {
+			throw new IllegalArgumentException("jdbcOperations cannot be null");
+		}
+		if (passwordEncoder == null) {
+			throw new IllegalArgumentException("passwordEncoder cannot be null");
 		}
 		this.eventDao = eventDao;
 		this.userDao = userDao;
-		this.userDetailsManager = userDetailsManager;
+		this.jdbcOperations = jdbcOperations;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	public Event getEvent(int eventId) {
@@ -89,9 +97,14 @@ public class DefaultCalendarService implements CalendarService {
 	}
 
 	public int createUser(CalendarUser user) {
-		List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
-		UserDetails userDetails = new User(user.getEmail(), user.getPassword(), authorities);
-		userDetailsManager.createUser(userDetails);
-		return userDao.createUser(user);
+//		int userId = userDao.createUser(user);
+//		jdbcOperations.update("insert into calendar_user_authorities(calendar_user,authority) values (?,?)", userId,
+//				"ROLE_USER");
+//		return userId;
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
+		int userId = userDao.createUser(user);
+		jdbcOperations.update("insert into calendar_user_authorities(calendar_user,authority) values (?,?)", userId,	"ROLE_USER");
+		return userId;
 	}
 }

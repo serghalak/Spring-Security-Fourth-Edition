@@ -63,7 +63,6 @@ public class SpringSecurityUserContext implements UserContext {
 
 		User user = (User) authentication.getPrincipal();
 		String email = user.getUsername();
-//        String email = user.getEmail();
 		if (email == null) {
 			return null;
 		}

@@ -29,6 +29,14 @@ public class DataSourceConfig {
 				.setType(EmbeddedDatabaseType.H2)
 				.addScript("/database/h2/calendar-schema.sql")
 				.addScript("/database/h2/calendar-data.sql")
+//				.addScript("/database/h2/security-schema.sql")
+//				.addScript("/database/h2/security-users.sql")
+//				.addScript("/database/h2/security-groups-schema.sql")
+//				.addScript("/database/h2/security-groups-mappings.sql")
+				.addScript("/database/h2/calendar-authorities.sql")
+				//.addScript("/database/h2/calendar-sha256.sql")
+				//.addScript("/database/h2/calendar-saltedsha256.sql")
+				.addScript("/database/h2/calendar-bcrypt.sql")
 				.build();
 	}
 

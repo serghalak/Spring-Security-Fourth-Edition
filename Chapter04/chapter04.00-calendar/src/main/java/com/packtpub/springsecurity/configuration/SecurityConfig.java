@@ -3,18 +3,26 @@ package com.packtpub.springsecurity.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -26,39 +34,48 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
 	/**
-	 * User details service in memory user details manager.
+	 * The constant CUSTOM_USERS_BY_USERNAME_QUERY.
+	 */
+	private static String CUSTOM_USERS_BY_USERNAME_QUERY = "select email, password, true " +
+			"from calendar_users where email = ?";
+
+	/**
+	 * The constant CUSTOM_AUTHORITIES_BY_USERNAME_QUERY.
+	 */
+	private static String CUSTOM_AUTHORITIES_BY_USERNAME_QUERY = "select cua.id, cua.authority " +
+			"from calendar_users cu, calendar_user_authorities " +
+			"cua where cu.email = ? " +
+			"and cu.id = cua.calendar_user";
+
+
+	/**
+	 * User details service user details manager.
 	 *
-	 * @return the in memory user details manager
+	 * @param dataSource the data source
+	 * @return the user details manager
 	 */
 	@Bean
-	public InMemoryUserDetailsManager userDetailsService() {
-		UserDetails user = User.builder()
-				.username("user")
-				.password("{noop}user")
-				.roles("USER")
-				.build();
+	public UserDetailsManager userDetailsService(DataSource dataSource) {
+		JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+		jdbcUserDetailsManager.setUsersByUsernameQuery(CUSTOM_USERS_BY_USERNAME_QUERY);
+		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(CUSTOM_AUTHORITIES_BY_USERNAME_QUERY);
+		return jdbcUserDetailsManager;
+	}
 
-		UserDetails admin = User.builder()
-				.username("admin")
-				.password("{noop}admin")
-				.roles("USER", "ADMIN")
-				.build();
-
-		UserDetails user1 = User.builder()
-				.username("user1@example.com")
-				.password("{noop}user1")
-				.roles("USER")
-				.build();
-
-		UserDetails admin1 = User.builder()
-				.username("admin1@example.com")
-				.password("{noop}admin1")
-				.roles("USER", "ADMIN")
-				.build();
-
-
-		return new InMemoryUserDetailsManager(user, admin, user1, admin1);
+	/**
+	 * Auth manager authentication manager.
+	 *
+	 * @param http the http
+	 * @return the authentication manager
+	 * @throws Exception the exception
+	 */
+	@Bean
+	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+		AuthenticationManagerBuilder authenticationManagerBuilder =
+				http.getSharedObject(AuthenticationManagerBuilder.class);
+		return authenticationManagerBuilder.build();
 	}
 
 	/**
@@ -108,16 +125,33 @@ public class SecurityConfig {
 
 
 	/**
-	 * Password encoder password encoder.
 	 *
-	 * @return the password encoder
+	 * @return ShaPasswordEncoder password encoder
 	 */
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		String idForEncode = "noop";
+//		Map<String, PasswordEncoder> encoders = new HashMap<>();
+//		encoders.put(idForEncode, NoOpPasswordEncoder.getInstance());
+//		return new DelegatingPasswordEncoder(idForEncode, encoders);
+//	}
+
+//	@Bean
+//	public PasswordEncoder encoder() {
+//		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		String idForEncode = "noop";
-		Map<String, PasswordEncoder> encoders = new HashMap<>();
-		encoders.put(idForEncode, NoOpPasswordEncoder.getInstance());
-		return new DelegatingPasswordEncoder(idForEncode, encoders);
+//		String idForEncode = "SHA-256";
+//		Map<String, PasswordEncoder> encoders = new HashMap<>();
+//		encoders.put("SHA-256", new org.springframework.security.crypto.
+//				password.MessageDigestPasswordEncoder("SHA-256"));
+//		return new DelegatingPasswordEncoder(idForEncode, encoders);
+
+		//return new StandardPasswordEncoder();
+
+		return new BCryptPasswordEncoder(4);
 	}
 
 }
