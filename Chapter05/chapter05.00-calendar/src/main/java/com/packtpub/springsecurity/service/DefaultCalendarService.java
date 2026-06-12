@@ -22,8 +22,6 @@ public class DefaultCalendarService implements CalendarService {
 
 	private final CalendarUserDao userDao;
 
-	private final JdbcOperations jdbcOperations;
-
 	private final PasswordEncoder passwordEncoder;
 
 	public DefaultCalendarService(final EventDao eventDao,
@@ -44,7 +42,6 @@ public class DefaultCalendarService implements CalendarService {
 		}
 		this.eventDao = eventDao;
 		this.userDao = userDao;
-		this.jdbcOperations = jdbcOperations;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -80,8 +77,8 @@ public class DefaultCalendarService implements CalendarService {
 		String encodedPassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);
 		int userId = userDao.createUser(user);
-		jdbcOperations.update("insert into calendar_user_authorities(calendar_user,authority) values (?,?)", userId,
-				"ROLE_USER");
+//		jdbcOperations.update("insert into calendar_user_authorities(calendar_user,authority) values (?,?)", userId,
+//				"ROLE_USER");
 		return userId;
 	}
 }

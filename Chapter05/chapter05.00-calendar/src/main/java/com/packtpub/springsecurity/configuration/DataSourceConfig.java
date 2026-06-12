@@ -20,16 +20,16 @@ public class DataSourceConfig {
 	 *
 	 * @return
 	 */
-	@Bean
-	public DataSource dataSource() {
-		return new EmbeddedDatabaseBuilder()
-				.setName("dataSource")
-				.setType(EmbeddedDatabaseType.H2)
-				.addScript("/database/h2/calendar-schema.sql")
-				.addScript("/database/h2/calendar-data.sql")
-				.addScript("/database/h2/calendar-authorities.sql")
-				.addScript("/database/h2/calendar-bcrypt.sql")
-				.build();
-	}
+//	@Bean
+//	public DataSource dataSource() {
+//		return new EmbeddedDatabaseBuilder()
+//				.setName("dataSource")
+//				.setType(EmbeddedDatabaseType.H2)
+//				.addScript("/database/h2/calendar-schema.sql")
+//				.addScript("/database/h2/calendar-data.sql")
+//				.addScript("/database/h2/calendar-authorities.sql")
+//				.addScript("/database/h2/calendar-bcrypt.sql")
+//				.build();
+//	}
 
 } 

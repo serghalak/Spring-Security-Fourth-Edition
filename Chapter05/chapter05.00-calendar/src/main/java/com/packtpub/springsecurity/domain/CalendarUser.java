@@ -2,8 +2,18 @@ package com.packtpub.springsecurity.domain;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 
@@ -14,10 +24,15 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
  *
  *  @author bnasslahsen
  */
+@Entity
+@Table(name = "calendar_users")
 public class CalendarUser implements Principal, Serializable {
 
 	private static final long serialVersionUID = 8433999509932007961L;
 
+	@Id
+	@SequenceGenerator(name = "user_id_seq", initialValue = 1000)
+	@GeneratedValue(generator = "user_id_seq")
 	private Integer id;
 
 	private String firstName;
@@ -28,6 +43,11 @@ public class CalendarUser implements Principal, Serializable {
 
 	private String password;
 
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_role",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles;
 	/**
 	 * Gets the email address for this user. When authenticating against this data directly, this is also used as the
 	 * username.
@@ -112,6 +132,17 @@ public class CalendarUser implements Principal, Serializable {
 		return getEmail();
 	}
 
+	/**
+	 * Get the list of Roles for this CalendarUser
+	 * @return
+	 */
+	public Set<Role> getRoles() {
+		return roles;
+	}
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
 	@Override
 	public int hashCode() {
 		//return HashCodeBuilder.reflectionHashCode(this);
@@ -123,7 +154,6 @@ public class CalendarUser implements Principal, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		//return EqualsBuilder.reflectionEquals(this, obj);
 		if (this == obj)
 			return true;
 		if (obj == null)

@@ -95,7 +95,12 @@ public class EventsController {
 		if (result.hasErrors()) {
 			return "events/create";
 		}
-		Event event = new Event(null, createEventForm.getSummary(), createEventForm.getDescription(), createEventForm.getWhen(), userContext.getCurrentUser(), attendee);
+		Event event = new Event();
+		event.setAttendee(attendee);
+		event.setDescription(createEventForm.getDescription());
+		event.setOwner(userContext.getCurrentUser());
+		event.setSummary(createEventForm.getSummary());
+		event.setDateWhen(createEventForm.getWhen());
 		calendarService.createEvent(event);
 		redirectAttributes.addFlashAttribute("message", "Successfully added the new event");
 		return "redirect:/events/my";

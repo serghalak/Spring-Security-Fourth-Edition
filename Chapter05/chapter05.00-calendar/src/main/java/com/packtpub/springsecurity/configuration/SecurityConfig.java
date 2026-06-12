@@ -1,7 +1,5 @@
 package com.packtpub.springsecurity.configuration;
 
-import javax.sql.DataSource;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,8 +10,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -26,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 
-	private static String CUSTOM_USERS_BY_USERNAME_QUERY = "select email, password, true " +
+	/*private static String CUSTOM_USERS_BY_USERNAME_QUERY = "select email, password, true " +
 			"from calendar_users where email = ?";
 
 	private static String CUSTOM_AUTHORITIES_BY_USERNAME_QUERY = "select cua.id, cua.authority " +
@@ -41,7 +37,7 @@ public class SecurityConfig {
 		jdbcUserDetailsManager.setUsersByUsernameQuery(CUSTOM_USERS_BY_USERNAME_QUERY);
 		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(CUSTOM_AUTHORITIES_BY_USERNAME_QUERY);
 		return jdbcUserDetailsManager;
-	}
+	}*/
 
 	@Bean
 	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
@@ -90,8 +86,10 @@ public class SecurityConfig {
 						.permitAll())
 				// CSRF is enabled by default, with Java Config
 				.csrf(AbstractHttpConfigurer::disable);
-		http.securityContext(securityContext -> securityContext.requireExplicitSave(false));
+		// For H2 Console
 		http.headers(headers -> headers.frameOptions(FrameOptionsConfig::disable));
+
+
 		return http.build();
 	}
 
