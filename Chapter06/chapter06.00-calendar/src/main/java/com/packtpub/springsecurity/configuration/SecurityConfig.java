@@ -2,14 +2,15 @@ package com.packtpub.springsecurity.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.ldap.LdapBindAuthenticationManagerFactory;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -22,11 +23,23 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 	@Bean
-	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-		AuthenticationManagerBuilder authenticationManagerBuilder =
-				http.getSharedObject(AuthenticationManagerBuilder.class);
-		return authenticationManagerBuilder.build();
+	LdapAuthoritiesPopulator authorities(BaseLdapPathContextSource contextSource) {
+		String groupSearchBase = "ou=Groups";
+		DefaultLdapAuthoritiesPopulator authorities =
+				new DefaultLdapAuthoritiesPopulator(contextSource, groupSearchBase);
+		authorities.setGroupSearchFilter("(uniqueMember={0})");
+		return authorities;
 	}
+
+	@Bean
+	AuthenticationManager authenticationManager(BaseLdapPathContextSource contextSource, LdapAuthoritiesPopulator authorities) {
+		LdapBindAuthenticationManagerFactory factory = new LdapBindAuthenticationManagerFactory(contextSource);
+		factory.setUserSearchBase("");
+		factory.setUserSearchFilter("(uid={0})");
+		factory.setLdapAuthoritiesPopulator(authorities);
+		return factory.createAuthenticationManager();
+	}
+
 
 	/**
 	 * Filter chain security filter chain.
@@ -81,9 +94,9 @@ public class SecurityConfig {
 	 *
 	 * @return PasswordEncoder
 	 */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder(4);
-	}
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder(4);
+//	}
 
 }
