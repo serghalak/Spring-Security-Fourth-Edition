@@ -1,5 +1,8 @@
 package com.packtpub.springsecurity.configuration;
 
+import com.packtpub.springsecurity.repository.RememberMeTokenRepository;
+import com.packtpub.springsecurity.web.authentication.rememberme.JpaPersistentTokenRepository;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,9 +11,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 /**
  * Spring Security Config Class
@@ -20,6 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
 
 	@Bean
 	public AuthenticationManager authManager(HttpSecurity http) throws Exception {
@@ -36,19 +45,20 @@ public class SecurityConfig {
 	 * @throws Exception the exception
 	 */
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http,
+			PersistentTokenRepository persistentTokenRepository, RememberMeServices rememberMeServices) throws Exception {
 		http.authorizeHttpRequests( authz -> authz
 						.requestMatchers("/webjars/**").permitAll()
 						.requestMatchers("/css/**").permitAll()
 						.requestMatchers("/favicon.ico").permitAll()
 						// H2 console:
-						.requestMatchers("/admin/h2/**").permitAll()
+						.requestMatchers("/admin/h2/**")
+						.access(new WebExpressionAuthorizationManager("isFullyAuthenticated() and hasRole('ADMIN')"))
 						.requestMatchers("/").permitAll()
 						.requestMatchers("/login/*").permitAll()
 						.requestMatchers("/logout").permitAll()
 						.requestMatchers("/signup/*").permitAll()
 						.requestMatchers("/errors/**").permitAll()
-						.requestMatchers("/admin/*").hasRole("ADMIN")
 						.requestMatchers("/events/").hasRole("ADMIN")
 						.requestMatchers("/**").hasRole("USER"))
 
@@ -70,9 +80,12 @@ public class SecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable);
 		// For H2 Console
 		http.headers(headers -> headers.frameOptions(FrameOptionsConfig::disable));
+
 		// Remember Me
-		http.rememberMe(httpSecurityRememberMeConfigurer ->
-				httpSecurityRememberMeConfigurer.key("jbcpCalendar"));
+		http.rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer
+				.key("jbcpCalendar")
+				.rememberMeServices(rememberMeServices)
+				.tokenRepository(persistentTokenRepository));
 		
 		return http.build();
 	}
@@ -88,4 +101,18 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder(4);
 	}
 
+	@Bean
+	public PersistentTokenRepository persistentTokenRepository(
+			RememberMeTokenRepository rmtr) {
+		return new JpaPersistentTokenRepository(rmtr);
+	}
+
+	@Bean
+	public RememberMeServices rememberMeServices (PersistentTokenRepository ptr, UserDetailsService  userDetailsService){
+		PersistentTokenBasedRememberMeServices rememberMeServices = new
+				PersistentTokenBasedRememberMeServices("jbcpCalendar",
+				userDetailsService, ptr);
+		rememberMeServices.setAlwaysRemember(true);
+		return rememberMeServices;
+	}
 }

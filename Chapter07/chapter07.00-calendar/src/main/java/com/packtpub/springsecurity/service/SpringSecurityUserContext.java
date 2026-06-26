@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -53,8 +54,8 @@ public class SpringSecurityUserContext implements UserContext {
             return null;
         }
 
-        CalendarUser user = (CalendarUser)authentication.getPrincipal();
-        String email = user.getEmail();
+		User user = (User) authentication.getPrincipal();
+        String email = user.getUsername();
         if (email == null) {
             return null;
         }
